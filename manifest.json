@@ -25,7 +25,8 @@
             "./style.css"
         ],
         "matches": [
-            "https://*.weibo.com/*"
+            "https://*/*",
+            "http://*/*"
         ],
         "run_at": "document_end"
     }],

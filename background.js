@@ -7,6 +7,9 @@
     weibo: {
         friends: 'get@https://weibo.com/ajax/friendships/friends?page={pageNo}&uid={uid}',
         fans: 'get@https://weibo.com/ajax/friendships/friends?relate=fans&page={pageNo}&uid={uid}&type=all&newFollowerCount=0'
+    },
+    flomo: {
+        notes: 'get@https://flomoapp.com/api/memo/?tag=&offset={offset}&tz=8:0'
     }
 };
 

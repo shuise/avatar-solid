@@ -1,7 +1,102 @@
 (function(){
-	setTimeout(run, 1000);
+	let host = location.host;
+	if(host.indexOf('weibo.com') > -1){
+		setTimeout(runWeibo, 1000);		
+	}
+	if(host.indexOf('flomoapp.com') > -1){
+		setTimeout(runFlomo, 100);		
+	}
 
-	function run(){
+	//flomo
+	function runFlomo(){
+		let appTpl = `<button id="rabbit-hole-btn">导出 flomo 笔记</button>`;
+
+	    let app = document.createElement('div');
+	    	app.className = 'rabbit-hole-flomo';
+	    app.innerHTML = appTpl;
+	    document.body.appendChild(app);
+
+	    let target = document.getElementById('rabbit-hole-btn');
+	    target.onclick = function(){
+	    	getFlomos(function(notes){
+	    		exportFlomoNotes(notes);
+	    	});
+	    }
+	}
+
+	function exportFlomoNotes(notes){
+		let md = '# flomo \n\n';
+
+		_.each(notes, function(note){
+			md += '\n\n' + note.content + '\n';
+
+			if(note.tags.length > 0){
+				md += '标签：';
+				_.each(note.tags, function(tag){
+					md += '#' + tag + ' '
+				});	
+				md += '\n';
+			}
+			md += '创建：' + note.created_at + '\n';
+			md += '更新：' + note.updated_at + '\n';
+			md += '来源：' + note.source + '\n';
+			md += '\n---------\n\n'
+		});
+
+		let zkCard = CRS.dateFormat(new Date(), 'yyyyMMddhhmm');
+		let fileName = 'flomo-' + zkCard + '.md';
+		let file = new File([ md ], fileName, { "type" : "text\/plain" });
+	    let objectUrl = URL.createObjectURL(file);
+		
+		download(objectUrl, fileName);
+
+		/*
+		backlinked_count: 0
+		content: "<p>0.663020690548981</p>"
+		created_at: "2022-05-26 17:13:21"
+		creator_id: 451474
+		deleted_at: null
+		files: []
+		linked_count: 0
+		linked_memos: []
+		pin: 0
+		slug: "MjUyNTA2NTY"
+		source: "web"
+		tags: []
+		updated_at: "2022-05-26 17:13:21"
+		*/
+	}
+	function getFlomos(callback){
+		var offset = 0;
+		var size = 50;
+		var result = [];
+
+		let t = setInterval(function(){
+			getFlomo(offset, function(memos){
+				result = result.concat(memos);
+				if(memos.length < 50){
+					clearInterval(t);
+					callback(result);
+				}
+			});
+			offset += 50;
+		}, 200);
+
+		function getFlomo(offset, _callback){
+			requestBridge({
+		    	api: 'flomo.notes',
+		    	type: 'request',
+		    	data: {
+		    		offset: offset
+		    	}
+		    }, function(res){
+		    	_callback(res.memos);
+		    });
+		}
+	}
+
+	//weibo
+	function runWeibo(){
 		let appTpl = `<div>
 			<div class="rabbit-hole-form">
 				<input type="text" id="rabbit-hole-username" value="那英" /> 账号名称<br>
@@ -78,21 +173,10 @@
 			for(var index in datas){
 				let users = datas[index];
 				_.each(users, function(user){
-					str += '\n[[' + user.screen_name + ']] ' + user.location + ', 主页：https://weibo.com/' + user.profile_url;
+					str += '\n[[' + user.screen_name + ']] ' + user.location + ', 主页： https://weibo.com/' + user.profile_url;
 				})
 			}
 			return str;
-		}
-
-		function download(objectUrl, fileName) {
-		    const tmpLink = document.createElement("a");
-		    tmpLink.href = objectUrl;
-		    tmpLink.download = fileName;
-		    document.body.appendChild(tmpLink);
-		    tmpLink.click();
-
-		    document.body.removeChild(tmpLink);
-		    URL.revokeObjectURL(objectUrl);
 		}
 	}
 
@@ -192,6 +276,17 @@
 		    	_callback(res);
 		    });
 		}
+	}
+
+	function download(objectUrl, fileName) {
+	    const tmpLink = document.createElement("a");
+	    tmpLink.href = objectUrl;
+	    tmpLink.download = fileName;
+	    document.body.appendChild(tmpLink);
+	    tmpLink.click();
+
+	    document.body.removeChild(tmpLink);
+	    URL.revokeObjectURL(objectUrl);
 	}
 
 	function requestBridge(data, callback){
