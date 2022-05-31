@@ -1,0 +1,47 @@
+{
+    "name": "兔子洞",
+    "description": "My Rabbit Holes!",
+    "version": "0.1",
+    "manifest_version": 2,
+    "icons": {
+        "128": "logo.png"
+    },
+    "browser_action": {
+        "default_icon": "./logo.png",
+        "default_title": "兔子洞",
+        "default_popup": "help.html"
+    },
+    "action": {
+        "default_title": "兔子洞",
+        "default_popup": "help.html"
+    },
+    "content_scripts": [{
+        "js": [
+            "./tools.js",
+            "./underscore-1.8.3.js",
+            "./rabbit.js"
+        ],
+        "css": [
+            "./style.css"
+        ],
+        "matches": [
+            "https://*.weibo.com/*"
+        ],
+        "run_at": "document_end"
+    }],
+    "host_permissions": ["http://*/*", "https://*/*"],
+    "permissions": [
+        "contextMenus",
+        "notifications",
+        "storage",
+        "tabs",
+        "activeTab",
+        "scripting",
+        "browsingData",
+        "cookies"
+    ],
+    "optional_permissions": ["downloads"],
+    "background": {
+        "service_worker": "background.js"
+    }
+}
