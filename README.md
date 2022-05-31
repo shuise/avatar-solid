@@ -12,5 +12,4 @@
 
 1. 下载源码，导入 chrome，导入方法：https://notes.bluetech.top/website/install.jpeg
 2. 本地设置一个文件夹，所有关系数据都导入到同一文件夹
-3. 使用 obsidian 打开文件夹，查看图谱
-![](graph.png "")
+3. 使用 obsidian 打开文件夹，查看图谱 ![](graph.png "")
