@@ -17,8 +17,8 @@
     },
     "content_scripts": [{
         "js": [
-            "./tools.js",
-            "./underscore-1.8.3.js",
+            "./res/tools.js",
+            "./res/underscore-1.8.3.js",
             "./rabbit.js"
         ],
         "css": [

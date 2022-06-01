@@ -28,12 +28,18 @@
 		let md = '# flomo \n\n';
 
 		_.each(notes, function(note){
-			md += '\n\n' + note.content + '\n';
+			md += '\n\n' + removeHTMLTag(note.content) + '\n\n';
+			let files = note.files || [];
+			if(files.length > 0){
+				_.each(files, function(file, index){
+					md += '![附件' + file.id + '](' + file.url + ' "") \n\n';
+				})
+			}
 
 			if(note.tags.length > 0){
-				md += '标签：';
+				md += '\n标签：';
 				_.each(note.tags, function(tag){
-					md += '#' + tag + ' '
+					md += ' #' + tag + ' '
 				});	
 				md += '\n';
 			}
@@ -49,23 +55,9 @@
 	    let objectUrl = URL.createObjectURL(file);
 		
 		download(objectUrl, fileName);
-
-		/*
-		backlinked_count: 0
-		content: "<p>0.663020690548981</p>"
-		created_at: "2022-05-26 17:13:21"
-		creator_id: 451474
-		deleted_at: null
-		files: []
-		linked_count: 0
-		linked_memos: []
-		pin: 0
-		slug: "MjUyNTA2NTY"
-		source: "web"
-		tags: []
-		updated_at: "2022-05-26 17:13:21"
-		*/
 	}
+
+	//https://flomoapp.com/api/memo/?tag=&tz=8:0
 	function getFlomos(callback){
 		var offset = 0;
 		var size = 50;
@@ -287,6 +279,14 @@
 
 	    document.body.removeChild(tmpLink);
 	    URL.revokeObjectURL(objectUrl);
+	}
+
+	function removeHTMLTag(str) {
+	    str = str.replace(/<\/?[^>]*>/g,''); //去除HTML tag
+	    // str = str.replace(/[ | ]*\n/g,'\n'); //去除行尾空白
+	    //str = str.replace(/\n[\s| | ]*\r/g,'\n'); //去除多余空行
+	    str = str.replace(/&nbsp;/ig,' '); //去掉&nbsp;
+	    return str;
 	}
 
 	function requestBridge(data, callback){

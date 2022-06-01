@@ -8,12 +8,12 @@
 
 1. 下载源码，导入 chrome，导入方法：https://notes.bluetech.top/website/install.jpeg
 2. 本地设置一个文件夹，所有关系数据都导入到同一文件夹
-3. 使用 obsidian 打开文件夹，查看图谱
-![](graph.png "")
+3. 进入 Flomo https://flomoapp.com/mine 一键导出 flomo 笔记（可在 flomo 直接使用 
+![Flomo导入 obsidian 效果图](./res/flomo.jpeg "")
+4. 进入微博 PC 版 https://weibo.com ，导出微博关系数据，每次导出关注与粉丝上限为 200`[[***]]` 双向链接语法）
+5. 使用 obsidian 打开文件夹，查看图谱
+![社交关系图谱](./res/graph.png "")
 
-## 进度
-1. 进入微博 PC 版，可导出微博关系数据，上限 200，
-2. 可导出 flomo 笔记
 
 ## 相关链接
 
