@@ -19,6 +19,8 @@
         "js": [
             "./res/tools.js",
             "./res/underscore-1.8.3.js",
+            "./res/jszip.js",
+            "./res/FileSaver.js",
             "./rabbit.js"
         ],
         "css": [
@@ -43,6 +45,6 @@
     ],
     "optional_permissions": ["downloads"],
     "background": {
-        "service_worker": "background.js"
+        "service_worker": "rb-bg.js"
     }
 }

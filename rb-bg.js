@@ -8,6 +8,12 @@
         friends: 'get@https://weibo.com/ajax/friendships/friends?page={pageNo}&uid={uid}',
         fans: 'get@https://weibo.com/ajax/friendships/friends?relate=fans&page={pageNo}&uid={uid}&type=all&newFollowerCount=0'
     },
+    douban: {
+        books: 'get@https://read.douban.com/j/bookshelf/',
+        bookInfo: 'post@https://read.douban.com/j/graphql',
+        detail: 'get@https://read.douban.com/ebook/{bookId}',
+        notes: 'get@https://read.douban.com/j/article_v2/{bookId}/my_annotations'
+    },
     flomo: {
         notes: 'get@https://flomoapp.com/api/memo/?tag=&offset={offset}&tz=8:0'
     }
@@ -26,9 +32,7 @@ const feynmanRequestServer = function(params, callback) {
     let method = urls[0].toUpperCase();
     let api = urls[1];
     // console.log(api, urls[1].indexOf('http'));
-    if(urls[1].indexOf('http') != 0){
-        api = domain + urls[1];   
-    }
+    
     let data = params.data || {};
 
     if(data.constructor.name == 'Object'){

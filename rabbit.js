@@ -6,6 +6,128 @@
 	if(host.indexOf('flomoapp.com') > -1){
 		setTimeout(runFlomo, 100);		
 	}
+	if(host.indexOf('douban.com') > -1){
+		setTimeout(runDouban, 100);		
+	}
+
+	//豆瓣
+	function runDouban(){
+		let appTpl = `<button id="rabbit-hole-btn">导出阅读笔记</button>`;
+
+	    let app = document.createElement('div');
+	    	app.className = 'rabbit-hole-flomo';
+	    app.innerHTML = appTpl;
+	    document.body.appendChild(app);
+
+	    let target = document.getElementById('rabbit-hole-btn');
+	    target.onclick = function(){
+	    	getDoubanReads(function(notes){
+	    		exportDoubanNotes(notes);
+	    	});
+	    }
+	}
+
+	function getDoubanReads(callback){
+		var results = {};
+		requestBridge({
+	    	api: 'douban.books',
+	    	type: 'request',
+	    	data: {}
+	    }, function(res){
+	    	let bookIds = res.worksIds || [];
+	    	let total = bookIds.length;
+	    	console.log(total, 'total', bookIds);
+	    	let count = 0;
+
+	    	// getBookInfos(bookIds);
+	    	// return;
+	    	_.each(bookIds, function(bookId){
+	    		// requestBridge({
+			    // 	api: 'douban.detail',
+			    // 	type: 'request',
+			    // 	data: {
+			    // 		bookId: bookId
+			    // 	}
+			    // }, function(res){
+			    // 	console.log(res);
+			    // });
+	    		requestBridge({
+			    	api: 'douban.notes',
+			    	type: 'request',
+			    	data: {
+			    		bookId: bookId
+			    	}
+			    }, function(res){
+			    	if(res.length > 0){
+			    		results[bookId] = res;			    		
+			    	}
+	    			count += 1;
+			    	if(count >= total){
+			    		callback(results);
+			    	}
+			    });
+	    	});
+	    });
+	}
+
+	function getBookInfos(ids){
+		let query = "\n  query getWorksList($worksIds: [ID!]) {\n    worksList(worksIds: $worksIds) {\n      \n  ... on WorksBase {\n    id\n    title\n    url\n    readerUrl\n    cover\n    author {\n      name\n    }\n    origAuthor {\n      name\n    }\n    wordCount\n    wordCountUnit\n    isOrigin\n    isColumn\n    isFinished\n    isPurchased\n    isOnSale\n    progressRatio\n  }\n  ... on ColumnWorks {\n    columnId\n    libraryUpdateTime(format: ISO)\n    updateTime(format: ISO)\n    rally {\n      season\n      isCurrentSeason\n      writingStarted\n      writingStage: stage(name: \"StageWriting\") {\n        startTime(format: ISO)\n        isStarted\n      }\n      voteStage: stage(name: \"StageVote\") {\n        isActive\n      }\n    }\n  }\n\n    }\n  }\n";
+		let data = {
+			operationName: "getWorksList",
+			query: query,
+			variables: {worksIds: ids}
+		}
+		requestBridge({
+	    	api: 'douban.bookInfo',
+	    	type: 'request',
+	    	data: data
+	    }, function(res){
+	    	console.log('getBookInfos', res);
+	    });
+	}
+
+	function exportDoubanNotes(books){
+		console.log(books);
+		// 初始化一个zip打包对象
+		var zip = new JSZip();
+
+		for(var bookId in books){
+			// 创建一个被用来打包的名为Hello.txt的文件
+			let fileName = bookId + ".md";
+			let content = createNote(bookId, books[bookId]);
+			console.log(fileName, books[bookId]);
+			zip.file(fileName, content);				
+		}
+		console.log('over');
+		// 把打包内容异步转成blob二进制格式
+		zip.generateAsync({type:"blob"}).then(function(content) {
+		    saveAs(content, "豆瓣书摘.zip");
+		});
+
+		function createNote(bookId, notes){
+			let md = '原书： https://read.douban.com/ebook/' + bookId + '\n\n';
+
+			_.each(notes, function(note){
+				md += '\n' + (note.extra || {}).text + '\n';
+
+				md += note.note + '\n';
+
+				if(note.tags.length > 0){
+					md += '\n标签：';
+					_.each(note.tags, function(tag){
+						md += ' #' + tag + ' '
+					});	
+					md += '\n';
+				}
+				md += '创建时间：' + CRS.dateFormat(note.create_time) + '\n';
+				md += note.owner.name +  '：' + note.owner.url + '\n';
+			});
+			
+			md += '\n---------\n\n';
+
+			return md;
+		}		
+	}
 
 	//flomo
 	function runFlomo(){
