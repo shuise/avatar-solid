@@ -11,6 +11,7 @@
 3. 进入 Flomo https://flomoapp.com/mine 一键导出 flomo 笔记（可在 flomo 直接使用 <img src="https://notes.bluetech.top/solid/flomo.jpeg" />
 4. 进入微博 PC 版 https://weibo.com ，导出微博关系数据，每次导出关注与粉丝上限为 200`[[***]]` 双向链接语法）
 5. 进入豆瓣 https://douban.com ，导出豆瓣阅读笔记
+6. 进入得到 https://dedao.cn ，导出得到阅读笔记，6.(3+1)更新
 
 ## 本地 obsidian
 使用 obsidian 打开文件夹，查看图谱 <img src="https://notes.bluetech.top/solid/graph.png" />
