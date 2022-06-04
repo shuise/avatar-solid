@@ -16,6 +16,10 @@
     },
     flomo: {
         notes: 'get@https://flomoapp.com/api/memo/?tag=&offset={offset}&tz=8:0'
+    },
+    dedao: {
+        books: 'post@https://www.dedao.cn/api/hades/v1/product/list', //
+        notes: 'post@https://www.dedao.cn/api/pc/ledgers/ebook/list' //book_enid: "pqvNQ1KRJa7EmgG8MPKrzykNVbDpBWZXAawQA1xO54nlvZq296YodejLXVJE5eAd"
     }
 };
 

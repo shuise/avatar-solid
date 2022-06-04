@@ -9,13 +9,110 @@
 	if(host.indexOf('douban.com') > -1){
 		setTimeout(runDouban, 100);		
 	}
+	if(host.indexOf('dedao.cn') > -1){
+		setTimeout(runDedao, 100);		
+	}
+
+	//dedao
+	function runDedao(){
+		let appTpl = `<button id="rabbit-hole-btn">一键导出读书笔记</button>`;
+
+	    let app = document.createElement('div');
+	    	app.className = 'rabbit-hole-toolbar';
+	    app.innerHTML = appTpl;
+	    document.body.appendChild(app);
+
+	    let target = document.getElementById('rabbit-hole-btn');
+	    target.onclick = function(){
+	    	target.innerText = '导出中……请等待';
+	    	getDedaoBookList(function(books){
+	    		// console.log(books);
+	    		exportDedaoNotes(books);
+	    	});
+	    }
+	}
+
+	function getDedaoBookList(callback){
+		let data = {
+			category: "ebook",
+			filter_complete: 0,
+			order: "study",
+			page: 1,
+			page_size: 200
+		}
+		requestBridge({
+	    	api: 'dedao.books',
+	    	type: 'request',
+	    	data: data
+	    }, function(res){
+	    	// console.log('dedao', res);
+	    	var books = res.c.list;
+	    	var count = 0;
+	    	var results = [];
+
+	    	_.each(books, function(book){
+				requestBridge({
+			    	api: 'dedao.notes',
+			    	type: 'request',
+			    	data: {
+			    		book_enid: book.enid
+			    	}
+			    }, function(res){
+			    	count += 1;
+			    	results.push({
+			    		book: book,
+			    		notes: res.c.list
+			    	});
+			    	// console.log(count, res, results);
+			    	if(count >= books.length){
+			    		callback(results);
+			    	}
+			    });
+	    	});
+	    });
+	}
+
+	function exportDedaoNotes(books){
+		console.log('exportDedaoNotes', books);
+		// 初始化一个zip打包对象
+		var zip = new JSZip();
+
+		_.each(books, function(item){
+			let fileName = item.book.title + ".md";
+			let content = createNote(item);
+			// console.log(fileName, books[bookId]);
+			zip.file(fileName, content);	
+		});
+
+		// 把打包内容异步转成blob二进制格式
+		zip.generateAsync({type:"blob"}).then(function(content) {
+		    saveAs(content, "得到读书笔记.zip");
+		});
+
+		function createNote(item){
+			let md = item.book.title + '： https://www.dedao.cn/ebook/reader?id=' + item.book.enid + '\n\n';
+
+			_.each(item.notes, function(note){
+				md += '\n' + (note.note_line || '') + '\n';
+
+				md += '>' + note.note + '\n';
+
+				md += '创建时间：' + CRS.dateFormat(note.create_time) + '\n';
+			});
+			
+			md += '\n---------\n\n';
+
+			return md;
+		}		
+	}
+	
 
 	//豆瓣
 	function runDouban(){
 		let appTpl = `<button id="rabbit-hole-btn">导出阅读笔记</button>`;
 
 	    let app = document.createElement('div');
-	    	app.className = 'rabbit-hole-flomo';
+	    	app.className = 'rabbit-hole-toolbar';
 	    app.innerHTML = appTpl;
 	    document.body.appendChild(app);
 
@@ -110,7 +207,7 @@
 			_.each(notes, function(note){
 				md += '\n' + (note.extra || {}).text + '\n';
 
-				md += note.note + '\n';
+				md += '>' + note.note + '\n';
 
 				if(note.tags.length > 0){
 					md += '\n标签：';
