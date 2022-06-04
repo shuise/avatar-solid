@@ -97,7 +97,7 @@
 
 				md += '>' + note.note + '\n';
 
-				md += '创建时间：' + CRS.dateFormat(note.create_time) + '\n';
+				md += '创建时间：' + CRS.dateFormat(note.create_time*1000) + '\n';
 			});
 			
 			md += '\n---------\n\n';
